@@ -42,5 +42,5 @@ app.use("/api/contact", contactRouter);
 
 
 app.listen(port, '0.0.0.0', () => {
-    console.log(`Backend server running on http://localhost:${port} and http://10.13.97.117:${port}`)
+    console.log(`Backend server running on https://khataapp-backend-0uuc.onrender.com/`)
 })
