@@ -1,12 +1,13 @@
 import express from "express";
 const router = express.Router();
-import { addTransaction, getTransaction, getDashboardSummary, deleteTransaction, getTopTransaction, updateTransaction } from "../controlles/transaction.controller.js";
+import { addTransaction, getTransaction, getDashboardSummary, settledTransaction, getTopTransaction, updateTransaction, getSettledTransaction } from "../controlles/transaction.controller.js";
 import protect from "../middleware/auth.middleware.js";
 
 router.post("/add", protect, addTransaction);
 router.get("/", protect, getTransaction);
 router.get("/summery", protect, getDashboardSummary);
-router.delete("/delete/:transactionId", protect, deleteTransaction);
+router.put("/settled/:transactionId", protect, settledTransaction);
+router.get("/settled", protect, getSettledTransaction);
 router.get("/top", protect, getTopTransaction);
 router.put("/update/:transactionId", protect, updateTransaction);
 

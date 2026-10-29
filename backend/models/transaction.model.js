@@ -22,6 +22,14 @@ const transactionSchema = new mongoose.Schema({
         enum: ['get', 'give'],
         required: true,
     },
+    isSettled: {
+        type: Boolean,
+        default: false,
+    },
+    settledDate: {
+        type: Date,
+        default: Date.now,
+    },
     note: {
         type: String,
         trim: true,

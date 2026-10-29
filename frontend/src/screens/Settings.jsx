@@ -477,7 +477,7 @@ const Settings = ({ navigation }) => {
                             </View>
                             <View style={styles.settingTextContainer}>
                                 <Text style={styles.settingTitle}>About Khata</Text>
-                                <Text style={styles.settingSubtitle}>Version 1.0.0 • Terms & Privacy</Text>
+                                <Text style={styles.settingSubtitle}>Version 2.0.0 • Terms & Privacy</Text>
                             </View>
                             <Right width={16} height={16} fill={theme.textMuted} />
                         </TouchableOpacity>
@@ -486,7 +486,7 @@ const Settings = ({ navigation }) => {
                 {/* App Version Footer */}
                 <View style={styles.footerContainer}>
                     <Text style={styles.footerBrand}>KhataApp</Text>
-                    <Text style={styles.footerVersion}>Version 1.0.0</Text>
+                    <Text style={styles.footerVersion}>Version 2.0.0</Text>
                     {/* <Text style={styles.footerCopyright}>100% Safe & Secure Cloud Ledger</Text> */}
                 </View>
             </ScrollView>
@@ -939,7 +939,7 @@ const Settings = ({ navigation }) => {
                                     </Text> */}
                                     <View style={styles.aboutMetaRow}>
                                         <Text style={styles.aboutMetaLabel}>Version:</Text>
-                                        <Text style={styles.aboutMetaValue}>1.0.0</Text>
+                                        <Text style={styles.aboutMetaValue}>2.0.0</Text>
                                     </View>
                                     <View style={styles.aboutMetaRow}>
                                         <Text style={styles.aboutMetaLabel}>Developer:</Text>

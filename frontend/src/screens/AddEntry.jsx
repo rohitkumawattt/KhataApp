@@ -1,5 +1,6 @@
 import {
     ActivityIndicator,
+    KeyboardAvoidingView,
     ScrollView,
     StyleSheet,
     Text,
@@ -156,13 +157,13 @@ const AddEntry = ({ navigation, route }) => {
     };
 
     // Execute Delete Transaction API Handler
-    const handleDeleteEntry = async () => {
+    const handleSettledEntry = async () => {
         const transactionId = entry?._id;
         if (!transactionId) return;
 
         try {
             setDeleteLoading(true);
-            const response = await axios.delete(`${BASE_URL}/transaction/delete/${transactionId}`, {
+            const response = await axios.put(`${BASE_URL}/transaction/settled/${transactionId}`, {}, {
                 headers: { Authorization: `Bearer ${accessToken}` },
             });
             if (response.data.success) {
@@ -218,172 +219,176 @@ const AddEntry = ({ navigation, route }) => {
                     <View style={styles.headerPlaceholder} />
                 )}
             </View>
+            <KeyboardAvoidingView style={{ flex: 1, backgroundColor: theme.background }}
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}>
 
-            {/* Entry Form */}
-            <ScrollView
-                showsVerticalScrollIndicator={false}
-                keyboardShouldPersistTaps="handled"
-                contentContainerStyle={{ paddingBottom: 40 }}
-            >
-                {/* Person Name Input & Suggestions */}
-                <View style={styles.inputGroup}>
-                    <Text style={styles.label}>Person Name</Text>
-                    <View style={styles.nameInputWrapper}>
-                        <TextInput
-                            style={[styles.nameInput, isEditMode && { opacity: 0.7 }]}
-                            placeholder="Enter person name..."
-                            placeholderTextColor={theme.textMuted}
-                            value={personName}
-                            editable={!isEditMode && !loading}
-                            onChangeText={(text) => {
-                                setPersonName(text);
-                                setSelectedPerson(null);
-                                setShowSuggestions(text.length > 0);
-                            }}
-                        />
-                    </View>
+                {/* Entry Form */}
+                <ScrollView
+                    showsVerticalScrollIndicator={false}
+                    keyboardShouldPersistTaps="handled"
+                    contentContainerStyle={{ paddingBottom: 40 }}
+                >
+                    {/* Person Name Input & Suggestions */}
+                    <View style={styles.inputGroup}>
+                        <Text style={styles.label}>Person Name</Text>
+                        <View style={styles.nameInputWrapper}>
+                            <TextInput
+                                style={[styles.nameInput, isEditMode && { opacity: 0.7 }]}
+                                placeholder="Enter person name..."
+                                placeholderTextColor={theme.textMuted}
+                                value={personName}
+                                editable={!isEditMode && !loading}
+                                onChangeText={(text) => {
+                                    setPersonName(text);
+                                    setSelectedPerson(null);
+                                    setShowSuggestions(text.length > 0);
+                                }}
+                            />
+                        </View>
 
-                    {!isEditMode && showSuggestions && (
-                        <View style={styles.suggestionContainer}>
-                            {filteredPersons.length > 0 ? (
-                                filteredPersons.map((p) => (
+                        {!isEditMode && showSuggestions && (
+                            <View style={styles.suggestionContainer}>
+                                {filteredPersons.length > 0 ? (
+                                    filteredPersons.map((p) => (
+                                        <TouchableOpacity
+                                            key={p._id || p.id}
+                                            style={styles.suggestionItem}
+                                            onPress={() => {
+                                                setPersonName(p.name);
+                                                setSelectedPerson(p);
+                                                setShowSuggestions(false);
+                                            }}
+                                        >
+                                            <View>
+                                                <Text style={styles.suggestionName}>{p.name}</Text>
+                                                <Text style={styles.suggestionNumber}>{p.phone || 'No Number'}</Text>
+                                            </View>
+                                        </TouchableOpacity>
+                                    ))
+                                ) : (
                                     <TouchableOpacity
-                                        key={p._id || p.id}
                                         style={styles.suggestionItem}
                                         onPress={() => {
-                                            setPersonName(p.name);
-                                            setSelectedPerson(p);
                                             setShowSuggestions(false);
+                                            navigation.navigate('AddPerson');
                                         }}
                                     >
                                         <View>
-                                            <Text style={styles.suggestionName}>{p.name}</Text>
-                                            <Text style={styles.suggestionNumber}>{p.phone || 'No Number'}</Text>
+                                            <Text style={styles.suggestionName}>No person found with this name</Text>
+                                            <Text style={[styles.suggestionNumber, { color: theme.primary, fontWeight: '600' }]}>
+                                                + Add New Person
+                                            </Text>
                                         </View>
                                     </TouchableOpacity>
-                                ))
-                            ) : (
-                                <TouchableOpacity
-                                    style={styles.suggestionItem}
-                                    onPress={() => {
-                                        setShowSuggestions(false);
-                                        navigation.navigate('AddPerson');
-                                    }}
-                                >
-                                    <View>
-                                        <Text style={styles.suggestionName}>No person found with this name</Text>
-                                        <Text style={[styles.suggestionNumber, { color: theme.primary, fontWeight: '600' }]}>
-                                            + Add New Person
-                                        </Text>
-                                    </View>
-                                </TouchableOpacity>
-                            )}
-                        </View>
-                    )}
-                </View>
+                                )}
+                            </View>
+                        )}
+                    </View>
 
-                {/* Date & Amount Row */}
-                <View style={styles.row}>
-                    <View style={styles.halfInput}>
-                        <Text style={styles.label}>Date</Text>
+                    {/* Date & Amount Row */}
+                    <View style={styles.row}>
+                        <View style={styles.halfInput}>
+                            <Text style={styles.label}>Date</Text>
+                            <TouchableOpacity
+                                style={styles.inputBox}
+                                onPress={() => setDatePickerOpen(true)}
+                                disabled={loading}
+                            >
+                                <Text style={styles.inputText}>{formatDate(date)}</Text>
+                            </TouchableOpacity>
+                        </View>
+
+                        <View style={styles.halfInput}>
+                            <Text style={styles.label}>Amount</Text>
+                            <View style={styles.amountContainer}>
+                                <Text style={styles.rupee}>₹</Text>
+                                <TextInput
+                                    style={styles.amountInput}
+                                    placeholder="0"
+                                    placeholderTextColor={theme.textMuted}
+                                    keyboardType="numeric"
+                                    value={amount}
+                                    onChangeText={setAmount}
+                                    editable={!loading}
+                                />
+                            </View>
+                        </View>
+                    </View>
+
+                    {/* Transaction Type */}
+                    <Text style={styles.label}>Transaction Type</Text>
+                    <View style={styles.typeContainer}>
                         <TouchableOpacity
-                            style={styles.inputBox}
-                            onPress={() => setDatePickerOpen(true)}
+                            style={[
+                                styles.typeButton,
+                                transactionType === 'get' && styles.getActive,
+                            ]}
+                            onPress={() => setTransactionType('get')}
                             disabled={loading}
                         >
-                            <Text style={styles.inputText}>{formatDate(date)}</Text>
+                            <Text
+                                style={[
+                                    styles.typeText,
+                                    transactionType === 'get' && styles.activeTypeText,
+                                ]}
+                            >
+                                You Will Get
+                            </Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            style={[
+                                styles.typeButton,
+                                transactionType === 'give' && styles.giveActive,
+                            ]}
+                            onPress={() => setTransactionType('give')}
+                            disabled={loading}
+                        >
+                            <Text
+                                style={[
+                                    styles.typeText,
+                                    transactionType === 'give' && styles.activeTypeText,
+                                ]}
+                            >
+                                You Will Give
+                            </Text>
                         </TouchableOpacity>
                     </View>
 
-                    <View style={styles.halfInput}>
-                        <Text style={styles.label}>Amount</Text>
-                        <View style={styles.amountContainer}>
-                            <Text style={styles.rupee}>₹</Text>
-                            <TextInput
-                                style={styles.amountInput}
-                                placeholder="0"
-                                placeholderTextColor={theme.textMuted}
-                                keyboardType="numeric"
-                                value={amount}
-                                onChangeText={setAmount}
-                                editable={!loading}
-                            />
-                        </View>
+                    {/* Note */}
+                    <View style={styles.inputGroup}>
+                        <Text style={styles.label}>Note (optional)</Text>
+                        <TextInput
+                            style={styles.noteInput}
+                            placeholder="What is this transaction for?"
+                            placeholderTextColor={theme.textMuted}
+                            value={note}
+                            onChangeText={setNote}
+                            multiline
+                            textAlignVertical="top"
+                            maxLength={250}
+                            editable={!loading}
+                        />
+                        <Text style={styles.characterCount}>{note.length}/250</Text>
                     </View>
-                </View>
 
-                {/* Transaction Type */}
-                <Text style={styles.label}>Transaction Type</Text>
-                <View style={styles.typeContainer}>
+                    {/* Submit Button */}
                     <TouchableOpacity
-                        style={[
-                            styles.typeButton,
-                            transactionType === 'get' && styles.getActive,
-                        ]}
-                        onPress={() => setTransactionType('get')}
+                        style={[styles.addButton, loading && { opacity: 0.7 }]}
+                        onPress={handleSaveEntry}
                         disabled={loading}
                     >
-                        <Text
-                            style={[
-                                styles.typeText,
-                                transactionType === 'get' && styles.activeTypeText,
-                            ]}
-                        >
-                            You Will Get
-                        </Text>
+                        {loading ? (
+                            <ActivityIndicator size="small" color={theme.surface} />
+                        ) : (
+                            <Text style={styles.addButtonText}>
+                                {isEditMode ? 'Save Entry' : '+ Add Entry'}
+                            </Text>
+                        )}
                     </TouchableOpacity>
-
-                    <TouchableOpacity
-                        style={[
-                            styles.typeButton,
-                            transactionType === 'give' && styles.giveActive,
-                        ]}
-                        onPress={() => setTransactionType('give')}
-                        disabled={loading}
-                    >
-                        <Text
-                            style={[
-                                styles.typeText,
-                                transactionType === 'give' && styles.activeTypeText,
-                            ]}
-                        >
-                            You Will Give
-                        </Text>
-                    </TouchableOpacity>
-                </View>
-
-                {/* Note */}
-                <View style={styles.inputGroup}>
-                    <Text style={styles.label}>Note (optional)</Text>
-                    <TextInput
-                        style={styles.noteInput}
-                        placeholder="What is this transaction for?"
-                        placeholderTextColor={theme.textMuted}
-                        value={note}
-                        onChangeText={setNote}
-                        multiline
-                        textAlignVertical="top"
-                        maxLength={250}
-                        editable={!loading}
-                    />
-                    <Text style={styles.characterCount}>{note.length}/250</Text>
-                </View>
-
-                {/* Submit Button */}
-                <TouchableOpacity
-                    style={[styles.addButton, loading && { opacity: 0.7 }]}
-                    onPress={handleSaveEntry}
-                    disabled={loading}
-                >
-                    {loading ? (
-                        <ActivityIndicator size="small" color={theme.surface} />
-                    ) : (
-                        <Text style={styles.addButtonText}>
-                            {isEditMode ? 'Save Entry' : '+ Add Entry'}
-                        </Text>
-                    )}
-                </TouchableOpacity>
-            </ScrollView>
+                </ScrollView>
+            </KeyboardAvoidingView>
 
             {/* Delete Confirmation Paper Dialog */}
             <Portal>
@@ -393,11 +398,11 @@ const AddEntry = ({ navigation, route }) => {
                     style={{ backgroundColor: theme.surface, borderRadius: 18 }}
                 >
                     <Dialog.Title style={{ color: theme.textPrimary, fontWeight: 'bold' }}>
-                        Delete Entry?
+                        Settled Entry?
                     </Dialog.Title>
                     <Dialog.Content>
                         <Text style={{ color: theme.textSecondary, fontSize: 14 }}>
-                            Are you sure you want to delete this transaction entry? This action cannot be undone.
+                            Are you sure you want to settled this transaction entry? This action cannot be undone.
                         </Text>
                     </Dialog.Content>
                     <Dialog.Actions>
@@ -409,12 +414,12 @@ const AddEntry = ({ navigation, route }) => {
                             Cancel
                         </Button>
                         <Button
-                            onPress={handleDeleteEntry}
+                            onPress={handleSettledEntry}
                             loading={deleteLoading}
                             disabled={deleteLoading}
                             textColor={theme.amountGive}
                         >
-                            Delete
+                            Settled
                         </Button>
                     </Dialog.Actions>
                 </Dialog>

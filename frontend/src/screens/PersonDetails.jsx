@@ -61,7 +61,7 @@ const PersonDetails = ({ route, navigation }) => {
                 // Filter transactions matching this personId
                 const personTx = allTx.filter((t) => {
                     const pId = t.personId?._id || t.personId;
-                    return pId === personId;
+                    return pId?.toString() === personId?.toString();
                 });
                 setTransactions(personTx);
             }
@@ -99,6 +99,7 @@ const PersonDetails = ({ route, navigation }) => {
             const response = await axios.delete(`${BASE_URL}/persons/delete/${personId}`, {
                 headers: { Authorization: `Bearer ${accessToken}` },
             });
+            console.log("DELETE PERSON RESPONSE: ", response);
 
             if (response.data.success) {
                 setDeleteDialogVisible(false);

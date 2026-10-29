@@ -43,14 +43,15 @@ export const addTransaction = async (req, res) => {
 export const getTransaction = async (req, res) => {
     try {
         const transactions = await Transaction.find({
-            userId: req.user._id
+            userId: req.user._id,
+            isSettled: { $ne: true }
         })
             .populate("personId", "name") // Jo fields chahiye unhe select karein
             .sort({ updatedAt: -1 });
 
         if (!transactions || transactions.length === 0) {
-            return res.status(404).json({
-                success: false,
+            return res.status(200).json({
+                success: true,
                 message: "Transactions not found"
             });
         }
@@ -75,7 +76,8 @@ export const getTransaction = async (req, res) => {
 export const getTopTransaction = async (req, res) => {
     try {
         const transactions = await Transaction.find({
-            userId: req.user._id
+            userId: req.user._id,
+            isSettled: { $ne: true }
         })
             .populate("personId", "name")
             .sort({ createdAt: -1 }).limit(5);
@@ -109,7 +111,7 @@ export const getDashboardSummary = async (req, res) => {
         const totalCustomers = await Person.countDocuments({ userId });
 
         // 2. Fetch all transactions for this user
-        const transactions = await Transaction.find({ userId });
+        const transactions = await Transaction.find({ userId, isSettled: { $ne: true } });
 
         let youWillGet = 0;
         let youWillGive = 0;
@@ -186,29 +188,60 @@ export const updateTransaction = async (req, res) => {
         return res.status(500).json({ success: false, message: error.message });
     }
 };
-// Delete Transaction
-export const deleteTransaction = async (req, res) => {
+// settled Transaction
+export const settledTransaction = async (req, res) => {
     try {
         const { transactionId } = req.params;
 
-        const transaction = await Transaction.findOneAndDelete({
+        const transaction = await Transaction.findOneAndUpdate({
             _id: transactionId,
             userId: req.user._id,
-        });
+            isSettled: false
+        }, {
+            $set: {
+                isSettled: true,
+                settledAt: new Date()
+            }
+        }, { new: true }
+        );
 
         if (!transaction) {
-            return res.status(404).json({ success: false, message: 'Transaction not found' });
+            return res.status(440).json({
+                success: false,
+                message: "Transaction not found or already settled",
+            });
         }
-
         // Sync Net Balance
         const netBalance = await updatePersonBalance(transaction.personId);
 
         res.status(200).json({
             success: true,
-            message: 'Transaction deleted successfully',
-            updatedNetBalance: netBalance,
+            message: 'Transaction settled successfully',
         });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
 };
+
+
+
+// get settled transaction 
+export const getSettledTransaction = async (req, res) => {
+    try {
+        const settledTransaction = await Transaction.find({
+            userId: req.user._id,
+            isSettled: true
+        }).populate("personId", "name")
+            .sort({ createdAt: -1 });
+
+        return res.status(200).json({
+            success: true,
+            settledTransaction: settledTransaction
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+}

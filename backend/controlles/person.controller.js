@@ -1,5 +1,6 @@
 import Person from "../models/person.model.js";
 import { uploadToCloudinary, deleteFromCloudinary } from "../config/cloudinary.js";
+import Transaction from "../models/transaction.model.js";
 
 // Add new person 
 export const addPerson = async (req, res) => {
@@ -226,6 +227,7 @@ export const deletePerson = async (req, res) => {
         if (!person) {
             return res.status(404).json({ success: false, message: 'Person not found' });
         }
+        await Transaction.deleteMany({ personId: person._id, userId: req.user._id });
 
         // Safe Cloudinary deletion
         if (person.profileImage?.public_id) {
@@ -235,9 +237,7 @@ export const deletePerson = async (req, res) => {
                 console.error('Cloudinary Image Delete Warning:', imgErr.message);
             }
         }
-
-        // Delete all associated transactions for this person
-        await Transaction.deleteMany({ personId: person._id });
+        await Person.findByIdAndDelete(person._id);
 
         return res.status(200).json({
             success: true,

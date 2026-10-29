@@ -93,7 +93,6 @@ const Home = ({ navigation }) => {
                 setTransactions([]);
             }
         } catch (error) {
-            Alert.alert('GET TRANSACTIONS ERROR:', error?.response?.data?.message || error.message);
             setTransactions([]);
         }
     };

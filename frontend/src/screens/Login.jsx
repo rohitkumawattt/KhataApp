@@ -9,6 +9,7 @@ import {
   ScrollView,
   Alert,
   ActivityIndicator,
+  KeyboardAvoidingView,
 } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
@@ -77,179 +78,183 @@ const Login = ({ navigation }) => {
   };
 
   return (
-    <ScrollView
-      style={[styles.container, { backgroundColor: theme.background }]}
-      contentContainerStyle={styles.scrollContent}
-      showsVerticalScrollIndicator={false}
-      keyboardShouldPersistTaps="handled"
-    >
-      {/* Back Button */}
-      <TouchableOpacity
-        style={[
-          styles.backButton,
-          { backgroundColor: theme.surface, borderColor: theme.border },
-        ]}
-        onPress={() => {
-          if (navigation.canGoBack()) {
-            navigation.goBack();
-          } else {
-            navigation.navigate('welcome');
-          }
-        }}
+    <KeyboardAvoidingView style={{ flex: 1, backgroundColor: theme.background }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}>
+      <ScrollView
+        style={[styles.container, { backgroundColor: theme.background }]}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
       >
-        <Back width={16} height={16} fill={theme.textPrimary} />
-      </TouchableOpacity>
-
-      {/* Header Logo, Title & Subtitle */}
-      <View style={styles.header}>
-        <View
+        {/* Back Button */}
+        <TouchableOpacity
           style={[
-            styles.logoContainer,
+            styles.backButton,
             { backgroundColor: theme.surface, borderColor: theme.border },
           ]}
+          onPress={() => {
+            if (navigation.canGoBack()) {
+              navigation.goBack();
+            } else {
+              navigation.navigate('welcome');
+            }
+          }}
         >
-          <Image source={IMAGES.Logo} style={styles.logoImage} />
-        </View>
-        <Text style={[styles.title, { color: theme.textPrimary }]}>Welcome Back!</Text>
-        <Text style={[styles.subtitle, { color: theme.textSecondary }]}>
-          Log in to access your Khata account
-        </Text>
-      </View>
+          <Back width={16} height={16} fill={theme.textPrimary} />
+        </TouchableOpacity>
 
-      {/* Form Fields */}
-      <View style={styles.form}>
-        {/* Email Input */}
-        <View
-          style={[
-            styles.inputContainer,
-            { backgroundColor: theme.surfaceSubtle, borderColor: theme.border },
-          ]}
-        >
-          <Mail width={16} height={16} fill={theme.icon} />
-          <TextInput
-            style={[styles.input, { color: theme.textPrimary }]}
-            placeholder="Email Address"
-            placeholderTextColor={theme.textMuted}
-            value={formData.email}
-            onChangeText={handleEmailChange}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            autoComplete="email"
-            textContentType="emailAddress"
-            importantForAutofill="yes"
-          />
-        </View>
-        {errors.email ? (
-          <Text style={[styles.errorText, { color: theme.amountGive }]}>
-            {errors.email}
-          </Text>
-        ) : null}
-
-        {/* Password Input with Show/Hide Toggle */}
-        <View
-          style={[
-            styles.inputContainer,
-            { backgroundColor: theme.surfaceSubtle, borderColor: theme.border },
-          ]}
-        >
-          <Lock width={16} height={16} fill={theme.icon} />
-          <TextInput
-            style={[styles.input, { color: theme.textPrimary }]}
-            placeholder="Password"
-            placeholderTextColor={theme.textMuted}
-            value={formData.password}
-            onChangeText={handlePasswordChange}
-            secureTextEntry={!showPassword}
-            autoComplete="password"
-            textContentType="password"
-            importantForAutofill="yes"
-          />
-          <TouchableOpacity
-            style={styles.eyeBtn}
-            onPress={() => setShowPassword(!showPassword)}
-            activeOpacity={0.7}
+        {/* Header Logo, Title & Subtitle */}
+        <View style={styles.header}>
+          <View
+            style={[
+              styles.logoContainer,
+              { backgroundColor: theme.surface, borderColor: theme.border },
+            ]}
           >
-            {showPassword ? (
-              <Eye width={16} height={16} fill={theme.icon} />
+            <Image source={IMAGES.Logo} style={styles.logoImage} />
+          </View>
+          <Text style={[styles.title, { color: theme.textPrimary }]}>Welcome Back!</Text>
+          <Text style={[styles.subtitle, { color: theme.textSecondary }]}>
+            Log in to access your Khata account
+          </Text>
+        </View>
+
+        {/* Form Fields */}
+        <View style={styles.form}>
+          {/* Email Input */}
+          <View
+            style={[
+              styles.inputContainer,
+              { backgroundColor: theme.surfaceSubtle, borderColor: theme.border },
+            ]}
+          >
+            <Mail width={16} height={16} fill={theme.icon} />
+            <TextInput
+              style={[styles.input, { color: theme.textPrimary }]}
+              placeholder="Email Address"
+              placeholderTextColor={theme.textMuted}
+              value={formData.email}
+              onChangeText={handleEmailChange}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoComplete="email"
+              textContentType="emailAddress"
+              importantForAutofill="yes"
+            />
+          </View>
+          {errors.email ? (
+            <Text style={[styles.errorText, { color: theme.amountGive }]}>
+              {errors.email}
+            </Text>
+          ) : null}
+
+          {/* Password Input with Show/Hide Toggle */}
+          <View
+            style={[
+              styles.inputContainer,
+              { backgroundColor: theme.surfaceSubtle, borderColor: theme.border },
+            ]}
+          >
+            <Lock width={16} height={16} fill={theme.icon} />
+            <TextInput
+              style={[styles.input, { color: theme.textPrimary }]}
+              placeholder="Password"
+              placeholderTextColor={theme.textMuted}
+              value={formData.password}
+              onChangeText={handlePasswordChange}
+              secureTextEntry={!showPassword}
+              autoComplete="password"
+              textContentType="password"
+              importantForAutofill="yes"
+            />
+            <TouchableOpacity
+              style={styles.eyeBtn}
+              onPress={() => setShowPassword(!showPassword)}
+              activeOpacity={0.7}
+            >
+              {showPassword ? (
+                <Eye width={16} height={16} fill={theme.icon} />
+              ) : (
+                <EyeCrossed width={16} height={16} fill={theme.icon} />
+              )}
+            </TouchableOpacity>
+          </View>
+          {errors.password ? (
+            <Text style={[styles.errorText, { color: theme.amountGive }]}>
+              {errors.password}
+            </Text>
+          ) : null}
+
+          {/* Forgot Password Link */}
+          <View style={styles.forgotPasswordContainer}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('forgotPassword')}
+              activeOpacity={0.7}
+            >
+              <Text style={[styles.forgotPasswordText, { color: theme.primary }]}>
+                Forgot Password?
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Login Button */}
+          <TouchableOpacity
+            style={[
+              styles.loginBtn,
+              { backgroundColor: theme.primary, shadowColor: theme.primary },
+            ]}
+            activeOpacity={0.85}
+            onPress={handleLogin}
+            disabled={loading}
+          >
+            {loading ? (
+              <ActivityIndicator size="small" color="#FFFFFF" />
             ) : (
-              <EyeCrossed width={16} height={16} fill={theme.icon} />
+              <Text style={styles.loginBtnText}>Log In</Text>
             )}
           </TouchableOpacity>
         </View>
-        {errors.password ? (
-          <Text style={[styles.errorText, { color: theme.amountGive }]}>
-            {errors.password}
-          </Text>
-        ) : null}
 
-        {/* Forgot Password Link */}
-        <View style={styles.forgotPasswordContainer}>
-          <TouchableOpacity
-            onPress={() => navigation.navigate('forgotPassword')}
-            activeOpacity={0.7}
-          >
-            <Text style={[styles.forgotPasswordText, { color: theme.primary }]}>
-              Forgot Password?
-            </Text>
-          </TouchableOpacity>
+        {/* Divider */}
+        <View style={styles.dividerContainer}>
+          <View style={[styles.dividerLine, { backgroundColor: theme.border }]} />
+          <Text style={[styles.dividerText, { color: theme.textMuted }]}>
+            Or continue with
+          </Text>
+          <View style={[styles.dividerLine, { backgroundColor: theme.border }]} />
         </View>
 
-        {/* Login Button */}
+        {/* Google Sign-In Button */}
         <TouchableOpacity
           style={[
-            styles.loginBtn,
-            { backgroundColor: theme.primary, shadowColor: theme.primary },
+            styles.googleBtn,
+            { backgroundColor: theme.disable, borderColor: theme.border },
           ]}
           activeOpacity={0.85}
-          onPress={handleLogin}
-          disabled={loading}
+          onPress={() => {
+            Alert.alert('Comming Soon!', 'We are working on it... you will get this soon. For now you can create account with your valid email.');
+          }}
         >
-          {loading ? (
-            <ActivityIndicator size="small" color="#FFFFFF" />
-          ) : (
-            <Text style={styles.loginBtnText}>Log In</Text>
-          )}
+          <Image source={IMAGES.Google} style={styles.googleIcon} />
+          <Text style={[styles.googleBtnText, { color: theme.textPrimary }]}>
+            Sign in with Google
+          </Text>
         </TouchableOpacity>
-      </View>
 
-      {/* Divider */}
-      <View style={styles.dividerContainer}>
-        <View style={[styles.dividerLine, { backgroundColor: theme.border }]} />
-        <Text style={[styles.dividerText, { color: theme.textMuted }]}>
-          Or continue with
-        </Text>
-        <View style={[styles.dividerLine, { backgroundColor: theme.border }]} />
-      </View>
-
-      {/* Google Sign-In Button */}
-      <TouchableOpacity
-        style={[
-          styles.googleBtn,
-          { backgroundColor: theme.disable, borderColor: theme.border },
-        ]}
-        activeOpacity={0.85}
-        onPress={() => {
-          Alert.alert('Comming Soon!', 'We are working on it... you will get this soon. For now you can create account with your valid email.');
-        }}
-      >
-        <Image source={IMAGES.Google} style={styles.googleIcon} />
-        <Text style={[styles.googleBtnText, { color: theme.textPrimary }]}>
-          Sign in with Google
-        </Text>
-      </TouchableOpacity>
-
-      {/* Register Navigation Link */}
-      <TouchableOpacity
-        style={styles.switchAuthBtn}
-        activeOpacity={0.7}
-        onPress={() => navigation.navigate('register')}
-      >
-        <Text style={[styles.switchAuthText, { color: theme.textSecondary }]}>
-          Don't have an account?{' '}
-          <Text style={[styles.highlight, { color: theme.primary }]}>Register</Text>
-        </Text>
-      </TouchableOpacity>
-    </ScrollView>
+        {/* Register Navigation Link */}
+        <TouchableOpacity
+          style={styles.switchAuthBtn}
+          activeOpacity={0.7}
+          onPress={() => navigation.navigate('register')}
+        >
+          <Text style={[styles.switchAuthText, { color: theme.textSecondary }]}>
+            Don't have an account?{' '}
+            <Text style={[styles.highlight, { color: theme.primary }]}>Register</Text>
+          </Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 

@@ -8,6 +8,7 @@ import PersonDetails from "../screens/PersonDetails"
 import EditProfile from "../screens/EditProfile"
 import ContactUs from "../screens/ContactUs"
 import Settings from "../screens/Settings"
+import AllAmount from '../screens/AllAmount';
 import ContactHistory from "../screens/ContactHistory"
 
 const Stack = createNativeStackNavigator();
@@ -21,6 +22,7 @@ const MainNavigation = () => {
         component={TabNavigation}
       />
       <Stack.Screen name='AddEntry' component={AddEntry} />
+      <Stack.Screen name='Entries' component={AllAmount} />
       <Stack.Screen name='AddPerson' component={AddPerson} />
       <Stack.Screen name='PersonDetails' component={PersonDetails} />
       <Stack.Screen name='EditProfile' component={EditProfile} />
