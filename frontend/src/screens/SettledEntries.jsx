@@ -159,10 +159,9 @@ const SettledEntries = ({ navigation }) => {
                                         <Text
                                             style={[
                                                 styles.entryAmount,
-                                                { color: isGet ? theme.amountGet : theme.amountGive },
                                             ]}
                                         >
-                                            {isGet ? `+₹${formattedAmount}` : `-₹${formattedAmount}`}
+                                            ₹{formattedAmount}
                                         </Text>
                                     </View>
                                 </View>

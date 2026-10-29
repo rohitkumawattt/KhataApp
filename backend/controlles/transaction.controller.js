@@ -196,7 +196,7 @@ export const settledTransaction = async (req, res) => {
         const transaction = await Transaction.findOneAndUpdate({
             _id: transactionId,
             userId: req.user._id,
-            isSettled: false
+            isSettled: { $ne: true }
         }, {
             $set: {
                 isSettled: true,
@@ -204,7 +204,6 @@ export const settledTransaction = async (req, res) => {
             }
         }, { new: true }
         );
-
         if (!transaction) {
             return res.status(440).json({
                 success: false,

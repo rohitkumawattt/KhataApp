@@ -5,12 +5,12 @@ import axios from 'axios';
 
 const AuthContext = createContext(null);
 
-// const BASE_URL =
-//   Platform.OS === 'android'
-//     ? 'http://localhost:3000/api' // PC Wi-Fi IPv4 Address
-//     : 'http://localhost:3000/api';
+const BASE_URL =
+  Platform.OS === 'android'
+    ? 'http://localhost:3000/api' // PC Wi-Fi IPv4 Address
+    : 'http://localhost:3000/api';
 
-const BASE_URL = "https://khataapp-backend-0uuc.onrender.com/api"
+// const BASE_URL = "https://khataapp-backend-0uuc.onrender.com/api"
 
 const STORAGE_KEYS = {
   accessToken: '@khata_access_token',
