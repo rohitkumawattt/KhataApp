@@ -24,7 +24,8 @@ const SettledEntries = ({ navigation }) => {
                     Authorization: `Bearer ${accessToken}`,
                 },
             });
-            console.log("SETTLED TRANSACTION RESPONCE: ", response.data.settledTransaction)
+            // console.log("SETTLED TRANSACTION RESPONCE: ", response.data.settledTransaction)
+            
             if (response.data.success) {
                 setTransactions(response.data.settledTransaction);
             } else {

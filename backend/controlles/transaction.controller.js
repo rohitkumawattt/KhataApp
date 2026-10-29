@@ -205,13 +205,13 @@ export const settledTransaction = async (req, res) => {
         }, { new: true }
         );
         if (!transaction) {
-            return res.status(440).json({
+            return res.status(404).json({
                 success: false,
                 message: "Transaction not found or already settled",
             });
         }
         // Sync Net Balance
-        const netBalance = await updatePersonBalance(transaction.personId);
+        await updatePersonBalance(transaction.personId);
 
         res.status(200).json({
             success: true,

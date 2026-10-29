@@ -1,5 +1,6 @@
 import {
     ActivityIndicator,
+    Alert,
     KeyboardAvoidingView,
     ScrollView,
     StyleSheet,
@@ -168,6 +169,7 @@ const AddEntry = ({ navigation, route }) => {
             });
             if (response.data.success) {
                 setDeleteDialogVisible(false);
+                Alert.alert('Success 🎉', 'Transaction marked as settled!');
                 if (navigation.canGoBack()) {
                     navigation.goBack();
                 } else {
